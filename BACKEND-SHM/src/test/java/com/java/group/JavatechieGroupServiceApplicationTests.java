@@ -1,4 +1,4 @@
-package com.javatechie.group;
+package com.java.group;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
