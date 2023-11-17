@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import com.java.group.common.UserConstant;
 import com.java.group.entity.User;
 import com.java.group.repository.UserRepository;
+import com.java.group.service.UserService;
 
 import java.security.Principal;
 import java.util.Arrays;
@@ -26,10 +27,13 @@ public class UserController {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private UserService userService;
 
     @PostMapping("/join")
     public String joinGroup(@RequestBody User user) {
-        user.setRoles(UserConstant.DEFAULT_ROLE);//USER
+        user.setRoles(UserConstant.DEFAULT_ROLE);
         String encryptedPwd = passwordEncoder.encode(user.getPassword());
         user.setPassword(encryptedPwd);
         user.setUuid(UUID.randomUUID().toString());
@@ -39,7 +43,7 @@ public class UserController {
    
 
     @GetMapping("/access/{userId}/{userRole}")
-    //@Secured("ROLE_ADMIN")
+    
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_MODERATOR')")
     public String giveAccessToUser(@PathVariable int userId, @PathVariable String userRole, Principal principal) {
         User user = repository.findById(userId).get();
@@ -52,6 +56,24 @@ public class UserController {
         repository.save(user);
         return "Hi " + user.getUserName() + " New Role assign to you by " + principal.getName();
     }
+    
+    @PostMapping("/register")
+    public String registerUser(@RequestBody User user) {
+        userService.registerUser(user);
+        return "User registered successfully!";
+    }
+    
+//    @PostMapping("/register")
+//    public String registerUser(@RequestBody User user) {
+//        user.setRoles(UserConstant.DEFAULT_ROLE); // USER
+//        String encryptedPwd = passwordEncoder.encode(user.getPassword());
+//        user.setPassword(encryptedPwd);
+//        user.setUuid(UUID.randomUUID().toString());
+//
+//        userService.registerUser(user);
+//
+//        return "User registered successfully!";
+//    }
 
     @GetMapping
     @Secured("ROLE_ADMIN")

@@ -17,14 +17,20 @@ public class GroupUserDetails implements UserDetails {
     private String password;
     private boolean isActive;
     private List<GrantedAuthority> authorities;
+    private String uuid; 
 
     public GroupUserDetails(User user) {
         this.userName = user.getUserName();
         this.password = user.getPassword();
         this.isActive = user.isActive();
-        this.authorities = Arrays.stream(user.getRoles().split(","))
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        this.uuid = user.getUuid(); 
+
+        
+        this.authorities = user.getRoles().isEmpty() ?
+                List.of(new SimpleGrantedAuthority("ROLE_USER")) :
+                Arrays.stream(user.getRoles().split(","))
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
     }
 
     @Override
@@ -59,6 +65,10 @@ public class GroupUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return isActive;
+    }
+
+    public String getUuid() {
+        return uuid;
     }
 }
