@@ -14,8 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+
 @ToString
 @Entity
 @Table(name = "USERS_AUTHENTICATION_TBL")
@@ -105,6 +104,20 @@ public class User {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
+
+	public User(int id, String userName, String password, String email, boolean active, String roles, String uuid) {
+		super();
+		this.id = id;
+		this.userName = userName;
+		this.password = password;
+		this.email = email;
+		this.active = active;
+		this.roles = roles;
+		this.uuid = uuid;
+	}
+	
+	
     
     
      	
