@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user")
+@CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired
@@ -39,6 +40,11 @@ public class UserController {
         user.setUuid(UUID.randomUUID().toString());
         repository.save(user);
         return "Hi " + user.getUserName() + " welcome to DEXT IT SOLUTIONS... !";
+    }
+    
+    @GetMapping("/")
+    public String rootCheck() {
+        return "Hi welcome to DEXT IT SOLUTIONS... !";
     }
    
 

@@ -1,10 +1,6 @@
 package com.java.group.entity;
 
-import lombok.AllArgsConstructor;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 
 
@@ -13,9 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Data
-
-@ToString
 @Entity
 @Table(name = "USERS_AUTHENTICATION_TBL")
 public class User {
@@ -116,6 +109,18 @@ public class User {
 		this.roles = roles;
 		this.uuid = uuid;
 	}
+
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", userName=" + userName + ", password=" + password + ", email=" + email + ", active="
+				+ active + ", roles=" + roles + ", uuid=" + uuid + ", getId()=" + getId() + ", getUserName()="
+				+ getUserName() + ", getPassword()=" + getPassword() + ", getEmail()=" + getEmail() + ", isActive()="
+				+ isActive() + ", getRoles()=" + getRoles() + ", getUuid()=" + getUuid() + ", getClass()=" + getClass()
+				+ ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
+	}
+	
+	
 	
 	
     

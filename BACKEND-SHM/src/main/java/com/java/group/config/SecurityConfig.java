@@ -1,6 +1,7 @@
 package com.java.group.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -8,9 +9,13 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.java.group.filter.CorsOptionsRequestFilter;
 import com.java.group.service.GroupUserDetailsService;
 
 @Configuration
@@ -21,6 +26,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private GroupUserDetailsService groupUserDetailsService;
 
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+    	return new BCryptPasswordEncoder();
+    }
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(groupUserDetailsService).passwordEncoder(passwordEncoder());
@@ -29,19 +38,33 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
+            .cors().and()  
             .authorizeRequests()
                 .antMatchers("/user/join", "/api/users/register").permitAll()
-                .antMatchers("/user/**", "/post/**").authenticated() 
+                .antMatchers("/user/**", "/post/**").authenticated()
+                .antMatchers("/admin/**").hasRole("ADMIN")
             .and()
-            .formLogin() 
-                .loginPage("/login") 
-                .permitAll() 
+            .formLogin()
+                .loginPage("/login")
+                .permitAll()
+                .defaultSuccessUrl("/dashboard")
             .and()
-            .httpBasic();
+            .httpBasic()
+            .and()
+            .addFilterBefore(new CorsOptionsRequestFilter(), ChannelProcessingFilter.class);
     }
-
+    
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("*"); 
+        configuration.addAllowedMethod("*"); 
+        configuration.addAllowedHeader("*");  
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
+    
 }
